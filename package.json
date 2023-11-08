@@ -1,0 +1,20 @@
+{
+  "name": "event-sidecar",
+  "version": "1.0.0",
+  "description": "Event Handling sidecar for FRMS Processors",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc --project tsconfig.json",
+    "start": "node -r dotenv/config build/index.js"
+  },
+  "author": "Jean-Pierre Nell",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@frmscoe/frms-coe-lib": "^2.1.3",
+    "@grpc/grpc-js": "^1.9.9",
+    "@grpc/proto-loader": "^0.7.10",
+    "nats": "^2.18.0",
+    "typescript": "^5.2.2"
+  }
+}
