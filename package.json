@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Event Handling sidecar for FRMS Processors",
   "main": "index.ts",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc --project tsconfig.json",
