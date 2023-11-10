@@ -1,12 +1,9 @@
-import { NatsConnection } from "nats";
+import { createNatsConnection } from "./services/nats.js";
+import * as grpc from '@grpc/grpc-js';
+import * as protoLoader from '@grpc/proto-loader';
 
-var grpc = require("@grpc/grpc-js");
-var protoLoader = require("@grpc/proto-loader");
-var PROTO_PATH =
-  __dirname +
-  "node_modules\\@frmscoe\\frms-coe-lib\\lib\\helpers\\proto\\Log.proto";
+var PROTO_PATH = 'proto/message.proto';
 
-var NatsConn: NatsConnection;
 
 var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
@@ -15,23 +12,31 @@ var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   defaults: true,
   oneofs: true,
 });
-var log_proto = grpc.loadPackageDefinition(packageDefinition).message;
+var log_proto: any = grpc.loadPackageDefinition(packageDefinition).message;
+
 const target = "localhost:50051";
 
-function Log(message: any) {
+const natsConnection = await createNatsConnection({ servers: ['localhost:4222'] });
+console.info("connected to nats");
+
+function sendLog(call: any, callback: any) {
+  // call.request is the Log Object
   //send to NATS
+  natsConnection.publish('Lumberjack', call.request)
+  callback();
 }
 
-function main() {
+async function main() {
   var server = new grpc.Server();
-  server.addService(log_proto.Greeter.service, { Log: Log });
+  server.addService(log_proto.Lumberjack.service, { sendLog });
   server.bindAsync(
-    "0.0.0.0:50051",
+    target,
     grpc.ServerCredentials.createInsecure(),
     () => {
       server.start();
     }
   );
+  console.info("grpc server is live");
 }
 
 process.on("uncaughtException", (err) => {
@@ -40,10 +45,9 @@ process.on("uncaughtException", (err) => {
 
 process.on("unhandledRejection", (err) => {
   console.error(
-    `process on unhandledRejection error: ${
-      JSON.stringify(err) ?? "[NoMetaData]"
+    `process on unhandledRejection error: ${JSON.stringify(err) ?? "[NoMetaData]"
     }`
   );
 });
 
-main();
+await main();
