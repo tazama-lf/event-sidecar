@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx src/index.ts",
-    "build": "tsc --project tsconfig.json",
+    "build": "tsc --project tsconfig.json && copyfiles -f proto/*.proto build/proto",
     "start": "node -r dotenv/config build/index.js"
   },
   "author": "Jean-Pierre Nell",
@@ -22,6 +22,7 @@
     "typescript": "^5.2.2"
   },
   "devDependencies": {
+    "copyfiles": "^2.4.1",
     "tsx": "^4.0.0"
   }
 }
