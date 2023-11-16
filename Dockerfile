@@ -28,9 +28,8 @@ COPY --from=dep-resolver /node_modules ./node_modules
 COPY --from=builder /home/app/build ./build
 COPY package.json ./
 
-ENV LOGSTASH_HOST=logstash.development.svc.cluster.local
-ENV LOGSTASH_PORT=8080
-ENV LOGSTASH_LEVEL='info'
+
+ENV PORT=5000
 
 # Set healthcheck command
 HEALTHCHECK --interval=60s CMD [ -e /tmp/.lock ] || exit 1

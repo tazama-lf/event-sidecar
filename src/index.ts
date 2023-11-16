@@ -2,11 +2,10 @@ import 'dotenv/config';
 import { createNatsConnection } from "./services/nats.js";
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import server, { subject } from './config/server.js';
+import server, { subject, port } from './config/server.js';
 import { JSONCodec } from 'nats';
 
 var PROTO_PATH = 'proto/message.proto';
-
 
 var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
@@ -17,7 +16,7 @@ var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 });
 var log_proto: any = grpc.loadPackageDefinition(packageDefinition).message;
 
-const target = "localhost:50051";
+const target = `0.0.0.0:${port}`;
 
 const natsConnection = await createNatsConnection({ servers: server });
 console.info("connected to nats");
