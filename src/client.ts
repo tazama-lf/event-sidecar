@@ -13,11 +13,17 @@ var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 var log_proto: any = grpc.loadPackageDefinition(packageDefinition).message;
 var client = new log_proto.Lumberjack('localhost:50051', grpc.credentials.createInsecure());
 
-let object = {
+
+type Message = {
+  message: string,
+  level: 'error' | 'info' | 'warn' | 'trace' | 'fatal',
+  channel: string
+}
+
+let object: Message = {
   message: "foo",
-  level: 2,
-  level_name: "bar",
-  channel: "channel",
+  level: 'error',
+  channel: "tms-service",
 };
 
 client.sendLog(object, () => {
