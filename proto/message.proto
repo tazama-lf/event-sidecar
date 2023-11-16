@@ -9,9 +9,17 @@ service Lumberjack {
   rpc SendLog (LogMessage) returns (google.protobuf.Empty);
 }
 
+enum LogLevel {
+  trace = 0;
+  debug = 1;
+  info = 2;
+  warn = 3;
+  error = 4;
+  fatal = 5;
+}
+
 message LogMessage {
-    string message = 1;
-    uint32 level = 2;
-    string level_name = 3;
-    string channel = 4;
+    string message = 0;
+    LogLevel level = 1;
+    string channel = 2;
 }
