@@ -20,7 +20,6 @@ let natsConnection: NatsConnection;
 
 const target = `0.0.0.0:${port}`;
 
-console.info("connected to nats");
 
 const jc = JSONCodec();
 function sendLog(call: any, callback: any) {
@@ -33,6 +32,7 @@ function sendLog(call: any, callback: any) {
 }
 
 async function main() {
+  console.info("starting grpc server");
   var server = new grpc.Server();
   server.addService(log_proto.Lumberjack.service, { sendLog });
   server.bindAsync(
@@ -56,8 +56,9 @@ process.on("unhandledRejection", (err) => {
   );
 });
 
-main();
 
 createNatsConnection({ servers: server }).then((con) => {
   natsConnection = con;
+  console.info("connected to nats");
+  main();
 })
