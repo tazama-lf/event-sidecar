@@ -13,6 +13,8 @@ COPY ./tsconfig.json ./
 RUN npm ci --ignore-scripts
 RUN npm run build
 
+RUN ls -al build
+
 FROM ${BUILD_IMAGE} AS dep-resolver
 LABEL stage=pre-prod
 # To filter out dev dependencies from final build

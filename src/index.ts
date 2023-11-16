@@ -3,9 +3,10 @@ import { createNatsConnection } from "./services/nats.js";
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import server, { subject, port } from './config/server.js';
-import { JSONCodec } from 'nats';
+import { JSONCodec, NatsConnection } from 'nats';
+import path from 'node:path';
 
-var PROTO_PATH = 'proto/message.proto';
+const PROTO_PATH = path.join(__dirname, 'proto/message.proto');
 
 var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
@@ -15,10 +16,10 @@ var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   oneofs: true,
 });
 var log_proto: any = grpc.loadPackageDefinition(packageDefinition).message;
+let natsConnection: NatsConnection;
 
 const target = `0.0.0.0:${port}`;
 
-const natsConnection = await createNatsConnection({ servers: server });
 console.info("connected to nats");
 
 const jc = JSONCodec();
@@ -55,4 +56,8 @@ process.on("unhandledRejection", (err) => {
   );
 });
 
-await main();
+main();
+
+createNatsConnection({ servers: server }).then((con) => {
+  natsConnection = con;
+})
