@@ -14,8 +14,6 @@ COPY ./tsconfig.json ./
 RUN npm ci --ignore-scripts
 RUN npm run build
 
-RUN ls -al build
-
 FROM ${BUILD_IMAGE} AS dep-resolver
 LABEL stage=pre-prod
 # To filter out dev dependencies from final build
@@ -31,8 +29,9 @@ COPY --from=dep-resolver /node_modules ./node_modules
 COPY --from=builder /home/app/build ./build
 COPY package.json ./
 
-
 ENV PORT=5000
+ENV NATS_SUBJECT=Lumberjack
+ENV NATS_SERVER=localhost:4222
 
 # Set healthcheck command
 HEALTHCHECK --interval=60s CMD [ -e /tmp/.lock ] || exit 1
