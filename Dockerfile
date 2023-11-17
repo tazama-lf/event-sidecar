@@ -31,7 +31,7 @@ COPY package.json ./
 
 ENV PORT=5000
 ENV NATS_SUBJECT=Lumberjack
-ENV NATS_SERVER=localhost:4222
+ENV NATS_SERVER=0.0.0.0:4222
 
 # Set healthcheck command
 HEALTHCHECK --interval=60s CMD [ -e /tmp/.lock ] || exit 1
