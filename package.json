@@ -6,12 +6,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx src/index.ts",
-    "build": "tsc --project tsconfig.json && copyfiles -f src/proto/*.proto build/proto",
+    "build": "tsc --project tsconfig.json",
     "start": "node -r dotenv/config build/index.js"
   },
   "author": "Jean-Pierre Nell",
   "license": "Apache-2.0",
   "dependencies": {
+    "@frmscoe/frms-coe-lib": "https://github.com/rtkay123/coe-lib.git",
     "@grpc/grpc-js": "^1.9.9",
     "@grpc/proto-loader": "^0.7.10",
     "dotenv": "^16.3.1",

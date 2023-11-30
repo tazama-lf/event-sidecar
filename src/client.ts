@@ -1,7 +1,11 @@
+/* An example gRPC client */
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
+import { LogMessage } from '@frmscoe/frms-coe-lib/lib/helpers/proto/message/LogMessage';
+import { LumberjackClient } from '@frmscoe/frms-coe-lib/lib/helpers/proto/message/Lumberjack';
+import path from 'node:path';
 
-var PROTO_PATH = 'proto/message.proto';
+const PROTO_PATH = path.join(__dirname, '../node_modules/@frmscoe/frms-coe-lib/lib/helpers/proto/Lumberjack.proto');
 
 var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
@@ -11,16 +15,9 @@ var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   oneofs: true,
 });
 var log_proto: any = grpc.loadPackageDefinition(packageDefinition).message;
-var client = new log_proto.Lumberjack('localhost:50051', grpc.credentials.createInsecure());
+var client: LumberjackClient = new log_proto.Lumberjack('localhost:5000', grpc.credentials.createInsecure());
 
-
-type Message = {
-  message: string,
-  level: 'error' | 'info' | 'warn' | 'trace' | 'fatal',
-  channel: string
-}
-
-let object: Message = {
+let object: LogMessage = {
   message: "foo",
   level: 'error',
   channel: "tms-service",

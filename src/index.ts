@@ -3,10 +3,11 @@ import { createNatsConnection } from "./services/nats.js";
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import server, { subject, port } from './config/server.js';
-import { JSONCodec, NatsConnection } from 'nats';
+import { NatsConnection } from 'nats';
 import path from 'node:path';
+import { createLogBuffer } from '@frmscoe/frms-coe-lib/lib/helpers/protobuf.js';
 
-const PROTO_PATH = path.join(__dirname, 'proto/message.proto');
+const PROTO_PATH = path.join(__dirname, '../node_modules/@frmscoe/frms-coe-lib/lib/helpers/proto/Lumberjack.proto');
 
 var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
@@ -15,19 +16,23 @@ var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   defaults: true,
   oneofs: true,
 });
-var log_proto: any = grpc.loadPackageDefinition(packageDefinition).message;
+var log_proto: any = grpc.loadPackageDefinition(packageDefinition).lumberjack;
 let natsConnection: NatsConnection;
 
 const target = `0.0.0.0:${port}`;
 
-
-const jc = JSONCodec();
 function sendLog(call: any, callback: any) {
   // call.request is the Log Object
   //send to NATS
+  //
+  const messageBuffer = createLogBuffer(call.request)
+  if (messageBuffer) {
+    natsConnection.publish(subject, messageBuffer);
+    console.log('published')
+  } else {
+    console.error('failed to encode log buffer', call);
+  }
 
-  natsConnection.publish(subject, jc.encode(call.request));
-  console.log('published')
   callback();
 }
 
