@@ -1,8 +1,8 @@
 /* An example gRPC client */
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import { LogMessage } from '@frmscoe/frms-coe-lib/lib/helpers/proto/message/LogMessage';
-import { LumberjackClient } from '@frmscoe/frms-coe-lib/lib/helpers/proto/message/Lumberjack';
+import { LogMessage } from '@frmscoe/frms-coe-lib/lib/helpers/proto/lumberjack/LogMessage';
+import { LumberjackClient } from '@frmscoe/frms-coe-lib/lib/helpers/proto/lumberjack/Lumberjack';
 import path from 'node:path';
 
 const PROTO_PATH = path.join(__dirname, '../node_modules/@frmscoe/frms-coe-lib/lib/helpers/proto/Lumberjack.proto');
