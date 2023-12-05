@@ -14,7 +14,7 @@ var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   defaults: true,
   oneofs: true,
 });
-var log_proto: any = grpc.loadPackageDefinition(packageDefinition).message;
+var log_proto: any = grpc.loadPackageDefinition(packageDefinition).lumberjack;
 var client: LumberjackClient = new log_proto.Lumberjack('localhost:5000', grpc.credentials.createInsecure());
 
 let object: LogMessage = {
