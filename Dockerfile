@@ -24,7 +24,8 @@ COPY package*.json ./
 RUN npm ci --omit=dev --ignore-scripts
 
 FROM ${RUN_IMAGE} AS run-env
-#USER nonroot
+## NOTE: this user is not available in the alpine image
+USER nonroot
 
 WORKDIR /home/app
 COPY --from=dep-resolver /node_modules ./node_modules
