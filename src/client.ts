@@ -1,28 +1,34 @@
 /* An example gRPC client */
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import { LogMessage } from '@frmscoe/frms-coe-lib/lib/helpers/proto/lumberjack/LogMessage';
-import { LumberjackClient } from '@frmscoe/frms-coe-lib/lib/helpers/proto/lumberjack/Lumberjack';
+import { type LogMessage } from '@frmscoe/frms-coe-lib/lib/helpers/proto/lumberjack/LogMessage';
+import { type LumberjackClient } from '@frmscoe/frms-coe-lib/lib/helpers/proto/lumberjack/Lumberjack';
 import path from 'node:path';
 
-const PROTO_PATH = path.join(__dirname, '../node_modules/@frmscoe/frms-coe-lib/lib/helpers/proto/Lumberjack.proto');
+const PROTO_PATH = path.join(
+  __dirname,
+  '../node_modules/@frmscoe/frms-coe-lib/lib/helpers/proto/Lumberjack.proto',
+);
 
-var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
+const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
   longs: String,
   enums: String,
   defaults: true,
   oneofs: true,
 });
-var log_proto: any = grpc.loadPackageDefinition(packageDefinition).lumberjack;
-var client: LumberjackClient = new log_proto.Lumberjack('localhost:5000', grpc.credentials.createInsecure());
+const logProto: any = grpc.loadPackageDefinition(packageDefinition).lumberjack;
+const client: LumberjackClient = new logProto.Lumberjack(
+  'localhost:5000',
+  grpc.credentials.createInsecure(),
+);
 
-let object: LogMessage = {
-  message: "foo",
+const object: LogMessage = {
+  message: 'foo',
   level: 'error',
-  channel: "tms-service",
+  channel: 'tms-service',
 };
 
 client.sendLog(object, () => {
-  console.log("sent", object)
-})
+  console.log('sent', object);
+});
