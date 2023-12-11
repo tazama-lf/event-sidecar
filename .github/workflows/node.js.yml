@@ -42,5 +42,7 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm install
-      - name: Run unit tests
+      - name: Check Linting
         run: npm run lint
+      - name: Check formatting
+        run: npm run lint:prettier
