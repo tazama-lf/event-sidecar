@@ -3,30 +3,30 @@ import { createNatsConnection } from "./services/nats.js";
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import server, { subject, port } from './config/server.js';
-import { NatsConnection } from 'nats';
+import { type NatsConnection } from 'nats';
 import path from 'node:path';
 import { createLogBuffer } from '@frmscoe/frms-coe-lib/lib/helpers/protobuf.js';
 
 const PROTO_PATH = path.join(__dirname, '../node_modules/@frmscoe/frms-coe-lib/lib/helpers/proto/Lumberjack.proto');
 
-var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
+const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
   longs: String,
   enums: String,
   defaults: true,
   oneofs: true,
 });
-var log_proto: any = grpc.loadPackageDefinition(packageDefinition).lumberjack;
+const logProto: any = grpc.loadPackageDefinition(packageDefinition).lumberjack;
 let natsConnection: NatsConnection;
 
 const target = `0.0.0.0:${port}`;
 
-function sendLog(call: any, callback: any) {
+function sendLog(call: any, callback: any): void {
   // call.request is the Log Object
-  //send to NATS
+  // send to NATS
   //
-  const messageBuffer = createLogBuffer(call.request)
-  if (messageBuffer) {
+  const messageBuffer = createLogBuffer(call.request as Record<string, unknown>)
+  if (messageBuffer != null) {
     natsConnection.publish(subject, messageBuffer);
     console.log('published')
   } else {
@@ -36,10 +36,10 @@ function sendLog(call: any, callback: any) {
   callback();
 }
 
-async function main() {
+function main(): void {
   console.info("starting grpc server");
-  var server = new grpc.Server();
-  server.addService(log_proto.Lumberjack.service, { sendLog });
+  const server = new grpc.Server();
+  server.addService(logProto.Lumberjack.service as grpc.ServiceDefinition<grpc.UntypedServiceImplementation>, { sendLog });
   server.bindAsync(
     target,
     grpc.ServerCredentials.createInsecure(),
@@ -66,4 +66,6 @@ createNatsConnection({ servers: server }).then((con) => {
   natsConnection = con;
   console.info("connected to nats");
   main();
+}).catch((e) => {
+  console.error(e)
 })
