@@ -5,7 +5,10 @@ import { type LogMessage } from '@frmscoe/frms-coe-lib/lib/helpers/proto/lumberj
 import { type LumberjackClient } from '@frmscoe/frms-coe-lib/lib/helpers/proto/lumberjack/Lumberjack';
 import path from 'node:path';
 
-const PROTO_PATH = path.join(__dirname, '../node_modules/@frmscoe/frms-coe-lib/lib/helpers/proto/Lumberjack.proto');
+const PROTO_PATH = path.join(
+  __dirname,
+  '../node_modules/@frmscoe/frms-coe-lib/lib/helpers/proto/Lumberjack.proto',
+);
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
@@ -15,14 +18,17 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   oneofs: true,
 });
 const logProto: any = grpc.loadPackageDefinition(packageDefinition).lumberjack;
-const client: LumberjackClient = new logProto.Lumberjack('localhost:5000', grpc.credentials.createInsecure());
+const client: LumberjackClient = new logProto.Lumberjack(
+  'localhost:5000',
+  grpc.credentials.createInsecure(),
+);
 
 const object: LogMessage = {
-  message: "foo",
+  message: 'foo',
   level: 'error',
-  channel: "tms-service",
+  channel: 'tms-service',
 };
 
 client.sendLog(object, () => {
-  console.log("sent", object)
-})
+  console.log('sent', object);
+});
