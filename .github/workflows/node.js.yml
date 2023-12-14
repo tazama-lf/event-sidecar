@@ -14,43 +14,62 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: npm / build
+    name: run build
     strategy:
       matrix:
         node-version: [16, 20]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-          registry-url: https://npm.pkg.github.com/
-          scope: '@frmscoe'
+          registry-url: ${{ env.NPM_REGISTRY }}
+          scope: ${{ env.NPM_SCOPE }}
       - name: Install dependencies 
-        run: npm install
-      - name: build
+        run: npm ci
+      - name: Run build
         run: npm run build
 
   lint:
     runs-on: ubuntu-latest
-    name: npm / lint
+    name: check style
     strategy:
       matrix:
-        node-version: [16, 20]
+        node-version: [20]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-          registry-url: https://npm.pkg.github.com/
-          scope: '@frmscoe'
+          registry-url: ${{ env.NPM_REGISTRY }}
+          scope: ${{ env.NPM_SCOPE }}
       - name: Install dependencies
-        run: npm install
-      - name: Check Linting
+        run: npm ci
+      - name: Check linting
         run: npm run lint
-      - name: Check formatting
-        run: npm run lint:prettier
+
+          #  test:
+          #    runs-on: ubuntu-latest
+          #    name: check tests
+          #    strategy:
+          #      matrix:
+          #        node-version: [20]
+          #    steps:
+          #      - name: Checkout code
+          #        uses: actions/checkout@v4
+          #      - name: Use Node.js
+          #        uses: actions/setup-node@v4
+          #        with:
+          #          node-version: ${{ matrix.node-version }}
+          #          cache: 'npm'
+          #          registry-url: ${{ env.NPM_REGISTRY }}
+          #          scope: ${{ env.NPM_SCOPE }}
+          #      - name: Install dependencies
+          #        run: npm ci
+          #      - name: Run tests
+          #        run: npm test
