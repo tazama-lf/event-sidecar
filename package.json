@@ -22,7 +22,7 @@
     "dotenv": "^16.3.1",
     "nats": "^2.18.0",
     "pino": "^8.17.0",
-    "pino-elasticsearch": "^7.0.0"
+    "pino-elasticsearch": "^8.0.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.14.0",
