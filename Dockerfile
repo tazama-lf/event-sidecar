@@ -12,6 +12,7 @@ WORKDIR /home/app
 COPY ./src ./src
 COPY ./package*.json ./
 COPY ./tsconfig.json ./
+ARG GH_TOKEN
 
 RUN npm ci --ignore-scripts
 RUN npm run build
@@ -21,6 +22,7 @@ LABEL stage=pre-prod
 # To filter out dev dependencies from final build
 
 COPY package*.json ./
+ARG GH_TOKEN
 RUN npm ci --omit=dev --ignore-scripts
 
 FROM ${RUN_IMAGE} AS run-env
