@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+version: "2"
+services:
+  node:
+    container_name: event-sidecar
+    image: example.io/sidecar-rel-1-0-0:1.0.0
+    build:
+      context: .
+      args:
+        - GH_TOKEN
+    restart: "no"
