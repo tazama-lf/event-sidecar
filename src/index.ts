@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import 'dotenv/config';
 import { createNatsConnection } from './services/nats.js';
 import * as grpc from '@grpc/grpc-js';

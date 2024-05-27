@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 /* An example gRPC client */
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
