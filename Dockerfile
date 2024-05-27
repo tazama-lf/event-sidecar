@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 ARG BUILD_IMAGE=node:20-bullseye
 #ARG RUN_IMAGE=node:21-alpine
 # NOTE: using distroless runtime image as alpine gives access to shell
