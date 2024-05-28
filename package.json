@@ -19,7 +19,7 @@
     "@frmscoe/frms-coe-lib": "^2.2.0",
     "@grpc/grpc-js": "^1.10.8",
     "@grpc/proto-loader": "^0.7.10",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.4.5",
     "nats": "^2.26.0",
     "pino": "^8.17.2",
     "pino-elasticsearch": "^8.0.0"
