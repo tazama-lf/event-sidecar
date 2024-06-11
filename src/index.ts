@@ -9,10 +9,7 @@ import { type NatsConnection } from 'nats';
 import path from 'node:path';
 import { createLogBuffer } from '@frmscoe/frms-coe-lib/lib/helpers/protobuf.js';
 
-const PROTO_PATH = path.join(
-  __dirname,
-  '../node_modules/@frmscoe/frms-coe-lib/lib/helpers/proto/Lumberjack.proto',
-);
+const PROTO_PATH = path.join(__dirname, '../node_modules/@frmscoe/frms-coe-lib/lib/helpers/proto/Lumberjack.proto');
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
@@ -21,18 +18,17 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   defaults: true,
   oneofs: true,
 });
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- trust me
 const logProto: any = grpc.loadPackageDefinition(packageDefinition).lumberjack;
 let natsConnection: NatsConnection;
 
 const target = `0.0.0.0:${port}`;
 
-function sendLog(call: any, callback: any): void {
+function sendLog(call: { request: Record<string, unknown> }, callback: () => void): void {
   // call.request is the Log Object
   // send to NATS
   //
-  const messageBuffer = createLogBuffer(
-    call.request as Record<string, unknown>,
-  );
+  const messageBuffer = createLogBuffer(call.request);
   if (messageBuffer != null) {
     natsConnection.publish(subject, messageBuffer);
     console.log('published');
@@ -46,11 +42,7 @@ function sendLog(call: any, callback: any): void {
 function main(): void {
   console.info('starting grpc server');
   const server = new grpc.Server();
-  server.addService(
-    logProto.Lumberjack
-      .service as grpc.ServiceDefinition<grpc.UntypedServiceImplementation>,
-    { sendLog },
-  );
+  server.addService(logProto.Lumberjack.service as grpc.ServiceDefinition<grpc.UntypedServiceImplementation>, { sendLog });
   server.bindAsync(target, grpc.ServerCredentials.createInsecure(), () => {
     server.start();
   });
@@ -62,11 +54,7 @@ process.on('uncaughtException', (err) => {
 });
 
 process.on('unhandledRejection', (err) => {
-  console.error(
-    `process on unhandledRejection error: ${
-      JSON.stringify(err) ?? '[NoMetaData]'
-    }`,
-  );
+  console.error(`process on unhandledRejection error: ${JSON.stringify(err) ?? '[NoMetaData]'}`);
 });
 
 createNatsConnection({ servers: server })
