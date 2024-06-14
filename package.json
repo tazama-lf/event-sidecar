@@ -4,40 +4,49 @@
   "description": "Event Handling sidecar for FRMS Processors",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx src/index.ts",
     "build": "tsc --project tsconfig.json",
     "start": "node -r dotenv/config build/index.js",
-    "lint": "eslint \"**/*.ts\"",
-    "lint:prettier": "prettier --check \"**/*.ts\"",
+    "clean": "npx rimraf build node_modules coverage package-lock.json",
+    "fix": "npm run fix:prettier && npm run fix:eslint",
     "fix:eslint": "eslint --fix \"**/*.ts\"",
-    "fix:prettier": "prettier --write \"**/*.ts\""
+    "fix:prettier": "prettier --write \"**/*.ts\"",
+    "lint": "npm run lint:eslint && npm run lint:prettier",
+    "lint:eslint": "eslint \"**/*.ts\"",
+    "lint:eslint-unused": "eslint --report-unused-disable-directives \"**/*.ts\"",
+    "lint:eslint-no-inline": "eslint --no-inline-config \"**/*.ts\"",
+    "lint:prettier": "prettier --check \"**/*.ts\"",
+    "prepare": "husky init"
   },
   "author": "Jean-Pierre Nell",
   "license": "Apache-2.0",
   "dependencies": {
-    "@frmscoe/frms-coe-lib": "^2.2.0",
+    "@frmscoe/frms-coe-lib": "^3.1.0",
     "@grpc/grpc-js": "^1.10.8",
-    "@grpc/proto-loader": "^0.7.10",
+    "@grpc/proto-loader": "^0.7.13",
     "dotenv": "^16.4.5",
     "nats": "^2.26.0",
-    "pino": "^8.17.2",
+    "pino": "^9.1.0",
     "pino-elasticsearch": "^8.0.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "@stylistic/eslint-plugin": "^2.1.0",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^7.13.0",
     "copyfiles": "^2.4.1",
     "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-config-standard": "^17.1.0",
-    "eslint-config-standard-with-typescript": "^43.0.1",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-n": "^16.6.2",
-    "eslint-plugin-promise": "^6.1.1",
-    "husky": "^8.0.3",
-    "lint-staged": "^15.2.0",
-    "prettier": "^3.2.5",
-    "tsx": "^4.11.0",
-    "typescript": "^5.3.3"
+    "eslint-config-love": "^52.0.0",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.5",
+    "prettier": "^3.3.2",
+    "tsx": "^4.15.2",
+    "typescript": "^5.4.5"
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   }
 }
