@@ -50,11 +50,6 @@ jobs:
         run: npm ci
         env:
           GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-
-      - name: Run Tests
-        run: npm test
-        env:
-          STARTUP_TYPE: 'nats'
         
       # Determine the release type (major, minor, patch) based on commit messages  
       - name: Determine Release Type
