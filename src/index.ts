@@ -18,16 +18,16 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   defaults: true,
   oneofs: true,
 });
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- trust me
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- library does not export the type
 const logProto: any = grpc.loadPackageDefinition(packageDefinition).lumberjack;
 let natsConnection: NatsConnection;
 
 const target = `0.0.0.0:${port}`;
 
-function sendLog(call: { request: Record<string, unknown> }, callback: () => void): void {
+function sendLog(call: grpc.ServerUnaryCall<Record<string, unknown>, unknown>, callback: grpc.sendUnaryData<unknown>): void {
   // call.request is the Log Object
   // send to NATS
-  //
   const messageBuffer = createLogBuffer(call.request);
   if (messageBuffer != null) {
     natsConnection.publish(subject, messageBuffer);
@@ -36,17 +36,19 @@ function sendLog(call: { request: Record<string, unknown> }, callback: () => voi
     console.error('failed to encode log buffer', call);
   }
 
-  callback();
+  callback(null, null);
 }
 
 function main(): void {
   console.info('starting grpc server');
   const server = new grpc.Server();
   server.addService(logProto.Lumberjack.service as grpc.ServiceDefinition<grpc.UntypedServiceImplementation>, { sendLog });
-  server.bindAsync(target, grpc.ServerCredentials.createInsecure(), () => {
-    server.start();
+  server.bindAsync(target, grpc.ServerCredentials.createInsecure(), (error: Error | null, port: number) => {
+    if (error) {
+      console.error(error);
+    }
   });
-  console.info('grpc server is live');
+  console.info(`grpc server is live on: ${target}`);
 }
 
 process.on('uncaughtException', (err) => {
