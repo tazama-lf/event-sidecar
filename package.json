@@ -30,7 +30,7 @@
     "pino-elasticsearch": "^8.0.0"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^2.1.0",
+    "@stylistic/eslint-plugin": "^2.6.1",
     "@typescript-eslint/eslint-plugin": "^7.13.0",
     "@typescript-eslint/parser": "^7.13.0",
     "copyfiles": "^2.4.1",
