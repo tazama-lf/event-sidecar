@@ -7,9 +7,9 @@ import * as protoLoader from '@grpc/proto-loader';
 import server, { subject, port } from './config/server.js';
 import { type NatsConnection } from 'nats';
 import path from 'node:path';
-import { createLogBuffer } from '@frmscoe/frms-coe-lib/lib/helpers/protobuf.js';
+import { createLogBuffer } from '@tazama-lf/frms-coe-lib/lib/helpers/protobuf.js';
 
-const PROTO_PATH = path.join(__dirname, '../node_modules/@frmscoe/frms-coe-lib/lib/helpers/proto/Lumberjack.proto');
+const PROTO_PATH = path.join(__dirname, '../node_modules/@tazama-lf/frms-coe-lib/lib/helpers/proto/Lumberjack.proto');
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,

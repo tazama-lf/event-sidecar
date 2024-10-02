@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
-export const subject = process.env.NATS_SUBJECT ?? 'Lumberjack';
-export const server = process.env.NATS_SERVER ?? 'localhost:4222';
-export const port = process.env.PORT ?? 5000;
+import { validateEnvVar } from '@tazama-lf/frms-coe-lib/lib/helpers/env';
+
+export const subject = validateEnvVar<string>('NATS_SUBJECT', 'string');
+export const server = validateEnvVar<string>('NATS_SERVER', 'string');
+export const port = validateEnvVar<number>('PORT', 'number');
 export default server;
