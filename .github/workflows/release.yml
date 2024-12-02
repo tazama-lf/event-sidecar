@@ -10,6 +10,7 @@ on:
     properties:
       milestone_number:
         type: string
+  workflow_dispatch:
 
 jobs:
   release:
@@ -41,39 +42,31 @@ jobs:
         if: ${{ steps.release-label.outputs.level != null }}
         with:
           semver_only: true
+
+      - name: Get Last Merged PR
+        id: get_merged_pr
+        uses: actions-ecosystem/action-get-merged-pull-request@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
         
       # Determine the release type (major, minor, patch) based on Last Merged PR Title  
-      - name: Determine Release Type by Last Merged PR Title
+      - name: Determine Release Type from PR Title
         id: determine_release
         run: |
-          export GH_USERNAME=${{ secrets.GH_USERNAME }}
-          export GH_TOKEN=${{ secrets.GH_TOKEN_LIB }}
-          git config --global user.name ${{ secrets.GH_USERNAME }}
-
-          # Clear the GITHUB_TOKEN environment variable and use a temporary file for gh authentication
-          echo "${{ secrets.GH_TOKEN_LIB }}" > /tmp/gh_token
-          unset GITHUB_TOKEN
-          unset GH_TOKEN
-          gh auth login --with-token < /tmp/gh_token
-
-          # Get the title of the last merged PR
-          LAST_MERGED_PR=$(gh pr list --state merged --sort merged_at --limit 1 --json title --jq '.[0].title')
-          echo "Last Merged PR Title: $LAST_MERGED_PR"
-
-          # Default release type is 'patch'
-          RELEASE_TYPE="patch"
-
-          # Determine the release type based on the PR title prefix
-          if echo "$LAST_MERGED_PR" | grep -q -e "^BREAKING CHANGE:"; then
+          PR_TITLE="${{ steps.get_merged_pr.outputs.title }}"
+          echo "PR Title: $PR_TITLE"
+      
+          RELEASE_TYPE="patch"  # Default release type
+          if echo "$PR_TITLE" | grep -q "^BREAKING CHANGE:"; then
             RELEASE_TYPE="major"
-          elif echo "$LAST_MERGED_PR" | grep -q -e "^feat!:"; then
+          elif echo "$PR_TITLE" | grep -q "^feat!:"; then
             RELEASE_TYPE="major"
-          elif echo "$LAST_MERGED_PR" | grep -q -e "^feat:"; then
+          elif echo "$PR_TITLE" | grep -q "^feat:"; then
             RELEASE_TYPE="minor"
-          elif echo "$LAST_MERGED_PR" | grep -q -e "^fix:" -e "^chore:" -e "^docs:" -e "^refactor:"; then
+          else
             RELEASE_TYPE="patch"
           fi
-
+      
           echo "Determined Release Type: $RELEASE_TYPE"
           echo "::set-output name=release_type::$RELEASE_TYPE"
         
