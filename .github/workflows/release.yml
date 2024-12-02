@@ -63,6 +63,8 @@ jobs:
             RELEASE_TYPE="major"
           elif echo "$PR_TITLE" | grep -q "^feat:"; then
             RELEASE_TYPE="minor"
+          else
+            RELEASE_TYPE="patch"
           fi
       
           echo "Determined Release Type: $RELEASE_TYPE"
