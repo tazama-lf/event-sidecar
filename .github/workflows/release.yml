@@ -10,6 +10,7 @@ on:
     properties:
       milestone_number:
         type: string
+  workflow_dispatch:
 
 jobs:
   release:
