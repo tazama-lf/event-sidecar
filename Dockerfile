@@ -41,9 +41,4 @@ ENV PORT=5000
 ENV NATS_SUBJECT=Lumberjack
 ENV NATS_SERVER=0.0.0.0:4222
 
-# Set healthcheck command
-HEALTHCHECK --interval=60s CMD [ -e /tmp/.lock ] || exit 1
-EXPOSE 4222
-
-# Execute watchdog command
 CMD ["build/index.js"]

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
+# Please do not attempt to edit this flow without the direct consent from the DevOps team. This file is managed centrally.
+
 name: Release Workflow
 
 on:
@@ -11,6 +13,7 @@ on:
 
 jobs:
   release:
+    if: github.actor != 'dependabot[bot]' && github.actor != 'dependabot-preview[bot]'
     runs-on: ubuntu-latest
     steps:
       # Checkout the main branch with all history
@@ -39,32 +42,39 @@ jobs:
         with:
           semver_only: true
         
-      # Determine the release type (major, minor, patch) based on commit messages  
-      - name: Determine Release Type
+      # Determine the release type (major, minor, patch) based on Last Merged PR Title  
+      - name: Determine Release Type by Last Merged PR Title
         id: determine_release
         run: |
-          PREV_VERSION=$(git describe --abbrev=0 --tags)
-          echo "Previous Version: $PREV_VERSION"
-          
-          COMMIT_MESSAGES=$(git log $PREV_VERSION^..HEAD --format=%B)
-          echo "Commit Messages: $COMMIT_MESSAGES"
-          
-          # Determine release type based on commit messages and labels
-          RELEASE_TYPE="patch"  # Default to patch
-          
-          if echo "$COMMIT_MESSAGES" | grep -q -e "BREAKING CHANGE:"; then
+          export GH_USERNAME=${{ secrets.GH_USERNAME }}
+          export GH_TOKEN=${{ secrets.GH_TOKEN_LIB }}
+          git config --global user.name ${{ secrets.GH_USERNAME }}
+
+          # Clear the GITHUB_TOKEN environment variable and use a temporary file for gh authentication
+          echo "${{ secrets.GH_TOKEN_LIB }}" > /tmp/gh_token
+          unset GITHUB_TOKEN
+          unset GH_TOKEN
+          gh auth login --with-token < /tmp/gh_token
+
+          # Get the title of the last merged PR
+          LAST_MERGED_PR=$(gh pr list --state merged --sort merged_at --limit 1 --json title --jq '.[0].title')
+          echo "Last Merged PR Title: $LAST_MERGED_PR"
+
+          # Default release type is 'patch'
+          RELEASE_TYPE="patch"
+
+          # Determine the release type based on the PR title prefix
+          if echo "$LAST_MERGED_PR" | grep -q -e "^BREAKING CHANGE:"; then
             RELEASE_TYPE="major"
-          elif echo "$COMMIT_MESSAGES" | grep -q -e "feat!:"; then
+          elif echo "$LAST_MERGED_PR" | grep -q -e "^feat!:"; then
             RELEASE_TYPE="major"
-          elif echo "$COMMIT_MESSAGES" | grep -q -e "feat:"; then
+          elif echo "$LAST_MERGED_PR" | grep -q -e "^feat:"; then
             RELEASE_TYPE="minor"
-          elif echo "$COMMIT_MESSAGES" | grep -q -e "feat:" && (echo "$COMMIT_MESSAGES" | grep -q -e "fix:" || echo "$COMMIT_MESSAGES" | grep -q -e "enhancement:" || echo "$COMMIT_MESSAGES" | grep -q -e "docs:" || echo "$COMMIT_MESSAGES" | grep -q -e "refactor:" || echo "$COMMIT_MESSAGES" | grep -q -e "chore:"); then
-            RELEASE_TYPE="minor"
-          elif echo "$COMMIT_MESSAGES" | grep -q -e "fix:" -e "enhancement:" -e "docs:" -e "refactor:" -e "chore:" -e "build:" -e "ci:" -e "perf:" -e "style:" -e "test:" -e "chore(deps):" -e "chore(deps-dev):"; then
+          elif echo "$LAST_MERGED_PR" | grep -q -e "^fix:" -e "^chore:" -e "^docs:" -e "^refactor:"; then
             RELEASE_TYPE="patch"
           fi
-          
-          echo "Release Type: $RELEASE_TYPE"
+
+          echo "Determined Release Type: $RELEASE_TYPE"
           echo "::set-output name=release_type::$RELEASE_TYPE"
         
       # Bump the version based on the determined release type
@@ -210,7 +220,7 @@ jobs:
       
       # Attach changelog as an artifact
       - name: Attach Changelog to Release
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: Changelog
           path: /home/runner/work/changelog.txt
@@ -228,30 +238,37 @@ jobs:
           draft: false
           prerelease: false
 
-      # Update the CHANGELOG.md file in the repository
-      - name: Update CHANGELOG.md
+      - name: Get Latest Release
         run: |
-          NEW_VERSION=${{ steps.bump_version.outputs.new_version }}
-          CHANGELOG_CONTENTS=$(cat /home/runner/work/changelog.txt)
-          # Prepend the new changelog content to the existing CHANGELOG.md below SPDX-License-Identifier section
-          echo -e "$(head -n 2 CHANGELOG.md)\n\n## $NEW_VERSION\n\n$CHANGELOG_CONTENTS\n\n$(tail -n +3 CHANGELOG.md)" > CHANGELOG.md
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add CHANGELOG.md
-          git commit -m "chore: Update CHANGELOG.md for $NEW_VERSION"
-          git push origin HEAD:main
+          echo "LATEST_RELEASE=$(gh release list --limit 1 | awk '{print $1}')" >> $GITHUB_ENV
+          echo "The latest release tag is $LATEST_RELEASE"
+
+      - name: Send Slack Notification
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
-      # Update the VERSION file
-      - name: Update VERSION file
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          NEW_VERSION=${{ steps.bump_version.outputs.new_version }}
-          echo -e "# SPDX-License-Identifier: Apache-2.0\n\n$NEW_VERSION" > VERSION
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add VERSION
-          git commit -m "chore: Update VERSION to $NEW_VERSION"
-          git push origin HEAD:main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "blocks": [
+              {
+                "type": "header",
+                "text": {
+                  "type": "plain_text",
+                  "text": "New Release Alert :tazama:",
+                  "emoji": true
+                }
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Github Repository:*\nhttps://github.com/${{ github.repository }}"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Release:*\n<https://github.com/${{ github.repository }}/releases/tag/${{ env.LATEST_RELEASE }}|Release notes>"
+                  }
+                ]
+              }
+            ]
+          }' ${{ secrets.SLACK_WEBHOOK_URL }}

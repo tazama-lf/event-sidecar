@@ -16,17 +16,17 @@
     "lint:eslint-unused": "eslint --report-unused-disable-directives \"**/*.ts\"",
     "lint:eslint-no-inline": "eslint --no-inline-config \"**/*.ts\"",
     "lint:prettier": "prettier --check \"**/*.ts\"",
-    "prepare": "husky init"
+    "prepare": "husky"
   },
   "author": "Jean-Pierre Nell",
   "license": "Apache-2.0",
   "dependencies": {
-    "@frmscoe/frms-coe-lib": "^3.1.0",
+    "@tazama-lf/frms-coe-lib": "5.0.0",
     "@grpc/grpc-js": "^1.10.8",
     "@grpc/proto-loader": "^0.7.13",
     "dotenv": "^16.4.5",
     "nats": "^2.26.0",
-    "pino": "^9.1.0",
+    "pino": "^9.4.0",
     "pino-elasticsearch": "^8.0.0"
   },
   "devDependencies": {
@@ -40,7 +40,7 @@
     "husky": "^9.0.11",
     "lint-staged": "^15.2.5",
     "prettier": "^3.3.2",
-    "tsx": "^4.15.4",
+    "tsx": "^4.19.1",
     "typescript": "^5.4.5"
   },
   "lint-staged": {
