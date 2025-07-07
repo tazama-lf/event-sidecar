@@ -27,7 +27,7 @@
     "dotenv": "^16.4.5",
     "nats": "^2.26.0",
     "pino": "^9.4.0",
-    "pino-elasticsearch": "^8.0.0"
+    "pino-elasticsearch": "^8.1.0"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^2.1.0",
