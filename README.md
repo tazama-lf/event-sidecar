@@ -65,6 +65,39 @@ This processor is intended to run alongside your Tazama core processors - each p
 
 For local development environments, you can run a **single instance** of this processor (that's exactly what the [Full-Stack-Docker](https://github.com/tazama-lf/Full-Stack-Docker-Tazama) does.
 
+#### Example GRPC client
+
+```typescript
+import * as grpc from '@grpc/grpc-js';
+import * as protoLoader from '@grpc/proto-loader';
+import { type LogMessage } from '@tazama-lf/frms-coe-lib/lib/helpers/proto/lumberjack/LogMessage';
+import { type LumberjackClient } from '@tazama-lf/frms-coe-lib/lib/helpers/proto/lumberjack/Lumberjack';
+import path from 'node:path';
+
+const PROTO_PATH = path.join(__dirname, '../node_modules/@tazama-lf/frms-coe-lib/lib/helpers/proto/Lumberjack.proto');
+
+const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
+  keepCase: true,
+  longs: String,
+  enums: String,
+  defaults: true,
+  oneofs: true,
+});
+
+const logProto: any = grpc.loadPackageDefinition(packageDefinition).lumberjack;
+const client: LumberjackClient = new logProto.Lumberjack('localhost:5000', grpc.credentials.createInsecure());
+
+const object: LogMessage = {
+  message: 'foo',
+  level: 'error',
+  channel: 'tms-service',
+};
+
+client.sendLog(object, () => {
+  console.log('sent', object);
+});
+```
+
 ## Troubleshooting
 
 For FAQ and troubleshooting, consult: [Troubleshooting](https://github.com/tazama-lf/docs/blob/f3f5cf07425e9785c27531511601fc61a81e51e4/Technical/Logging/Troubleshooting.md)

@@ -2,7 +2,7 @@
 
 import { validateEnvVar } from '@tazama-lf/frms-coe-lib/lib/config';
 
-export const subject = validateEnvVar<string>('NATS_SUBJECT', 'string');
-export const server = validateEnvVar<string>('NATS_SERVER', 'string');
-export const port = validateEnvVar<number>('PORT', 'number');
+export const subject = validateEnvVar('NATS_SUBJECT', 'string') as string;
+export const server = validateEnvVar('NATS_SERVER', 'string') as string;
+export const port = validateEnvVar('PORT', 'number') as number;
 export default server;
