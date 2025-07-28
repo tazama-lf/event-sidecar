@@ -24,7 +24,7 @@
     "@grpc/grpc-js": "^1.13.4",
     "@grpc/proto-loader": "^0.7.15",
     "@tazama-lf/frms-coe-lib":"5.1.0-rc.7",
-    "dotenv": "^17.2.0",
+    "dotenv": "^17.2.1",
     "nats": "^2.29.3",
     "pino": "^9.7.0",
     "pino-elasticsearch": "^8.1.0"
