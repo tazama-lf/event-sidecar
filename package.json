@@ -1,6 +1,6 @@
 {
   "name": "event-sidecar",
-  "version": "1.0.0",
+  "version": "2.2.0",
   "description": "Event Handling sidecar for FRMS Processors",
   "main": "index.ts",
   "scripts": {
@@ -18,7 +18,7 @@
     "lint:prettier": "prettier --check \"**/*.ts\"",
     "prepare": "husky"
   },
-  "author": "Jean-Pierre Nell",
+  "author": "Tazama.org",
   "license": "Apache-2.0",
   "dependencies": {
     "@grpc/grpc-js": "^1.13.4",
