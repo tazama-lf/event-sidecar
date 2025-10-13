@@ -26,7 +26,7 @@
     "@tazama-lf/frms-coe-lib":"6.0.0-rc.13",
     "dotenv": "^17.2.0",
     "nats": "^2.29.3",
-    "pino": "^9.7.0",
+    "pino": "^10.0.0",
     "pino-elasticsearch": "^8.1.0"
   },
   "devDependencies": {
