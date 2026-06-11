@@ -21,7 +21,7 @@
   "author": "Jean-Pierre Nell",
   "license": "Apache-2.0",
   "dependencies": {
-    "@grpc/grpc-js": "^1.13.4",
+    "@grpc/grpc-js": "^1.14.4",
     "@grpc/proto-loader": "^0.7.15",
     "@tazama-lf/frms-coe-lib":"6.0.0",
     "dotenv": "^17.2.0",
