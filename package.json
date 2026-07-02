@@ -16,14 +16,15 @@
     "lint:eslint-unused": "eslint --report-unused-disable-directives",
     "lint:eslint-no-inline": "eslint --no-inline-config",
     "lint:prettier": "prettier --check \"**/*.ts\"",
+    "test": "jest --config=jest.config.ts --passWithNoTests --runInBand --detectOpenHandles --forceExit",
     "prepare": "husky"
   },
   "author": "Jean-Pierre Nell",
   "license": "Apache-2.0",
   "dependencies": {
-    "@grpc/grpc-js": "^1.13.4",
+    "@grpc/grpc-js": "^1.14.4",
     "@grpc/proto-loader": "^0.7.15",
-    "@tazama-lf/frms-coe-lib": "7.0.2-rc.2",
+    "@tazama-lf/frms-coe-lib": "8.2.0-rc.6",
     "dotenv": "^17.2.0",
     "nats": "^2.29.3",
     "pino": "^9.7.0",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@eslint-community/eslint-plugin-eslint-comments": "^4.5.0",
     "@stylistic/eslint-plugin": "^5.2.0",
+    "@types/jest": "^30.0.0",
     "@typescript-eslint/eslint-plugin": "^8.37.0",
     "@typescript-eslint/parser": "^8.37.0",
     "copyfiles": "^2.4.1",
@@ -39,8 +41,11 @@
     "eslint-config-love": "^121.0.0",
     "eslint-config-prettier": "^10.1.8",
     "husky": "^9.1.7",
+    "jest": "^30.2.0",
     "lint-staged": "^16.1.2",
     "prettier": "^3.6.2",
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   },
@@ -49,5 +54,10 @@
       "eslint --fix",
       "prettier --write"
     ]
+  },
+  "overrides": {
+    "uuid": "^11.1.1",
+    "@opentelemetry/core": "^2.8.0",
+    "undici": "^6.27.0"
   }
 }
