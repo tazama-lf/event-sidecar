@@ -51,6 +51,6 @@ describe('handleSendLog', () => {
 
     expect(natsConnection.publish).not.toHaveBeenCalled();
     expect(loggerService.log).not.toHaveBeenCalled();
-    expect(loggerService.error).toHaveBeenCalledWith('failed to encode log buffer', call);
+    expect(loggerService.error).toHaveBeenCalledWith('failed to encode log buffer', (call as { request: unknown }).request);
   });
 });

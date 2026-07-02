@@ -22,6 +22,6 @@ export function handleSendLog(
     natsConnection.publish(subject, messageBuffer);
     loggerService.log(`${(call.request.channel as string | undefined) ?? 'unknown'} has published`);
   } else {
-    loggerService.error('failed to encode log buffer', call);
+    loggerService.error('failed to encode log buffer', call.request);
   }
 }

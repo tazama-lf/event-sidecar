@@ -37,8 +37,13 @@ const target = `0.0.0.0:${port}`;
 
 function sendLog(call: grpc.ServerUnaryCall<Record<string, unknown>, unknown>, callback: grpc.sendUnaryData<unknown>): void {
   // call.request is the Log Object; encode it and publish to NATS
-  handleSendLog(call, natsConnection, loggerService, subject);
-  callback(null, null);
+  try {
+    handleSendLog(call, natsConnection, loggerService, subject);
+    callback(null, null);
+  } catch (error) {
+    loggerService.error('failed to handle sendLog', util.inspect(error), 'index.ts');
+    callback(error instanceof Error ? error : new Error(util.inspect(error)), null);
+  }
 }
 
 function main(): void {
