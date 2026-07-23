@@ -2,12 +2,12 @@
 
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import { createLogBuffer } from '@tazama-lf/frms-coe-lib/lib/helpers/protobuf.js';
 import 'dotenv/config';
 import type { NatsConnection } from 'nats';
 import path from 'node:path';
 import * as util from 'node:util';
 import server, { port, subject } from './config/server.js';
+import { handleSendLog } from './services/logHandler.js';
 import { createNatsConnection } from './services/nats.js';
 import { LoggerService } from '@tazama-lf/frms-coe-lib';
 
@@ -36,17 +36,14 @@ let natsConnection: NatsConnection;
 const target = `0.0.0.0:${port}`;
 
 function sendLog(call: grpc.ServerUnaryCall<Record<string, unknown>, unknown>, callback: grpc.sendUnaryData<unknown>): void {
-  // call.request is the Log Object
-  // send to NATS
-  const messageBuffer = createLogBuffer(call.request);
-  if (messageBuffer != null) {
-    natsConnection.publish(subject, messageBuffer);
-    loggerService.log(`${(call.request.channel as string | undefined) ?? 'unknown'} has published`);
-  } else {
-    loggerService.error('failed to encode log buffer', call);
+  // call.request is the Log Object; encode it and publish to NATS
+  try {
+    handleSendLog(call, natsConnection, loggerService, subject);
+    callback(null, null);
+  } catch (error) {
+    loggerService.error('failed to handle sendLog', util.inspect(error), 'index.ts');
+    callback(error instanceof Error ? error : new Error(util.inspect(error)), null);
   }
-
-  callback(null, null);
 }
 
 function main(): void {
