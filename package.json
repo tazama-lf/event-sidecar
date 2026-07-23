@@ -1,6 +1,6 @@
 {
   "name": "event-sidecar",
-  "version": "4.0.0-rc.0",
+  "version": "4.0.0",
   "description": "Event Handling sidecar for FRMS Processors",
   "main": "index.ts",
   "scripts": {
@@ -24,7 +24,7 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.14.4",
     "@grpc/proto-loader": "^0.7.15",
-    "@tazama-lf/frms-coe-lib": "8.2.0-rc.6",
+    "@tazama-lf/frms-coe-lib": "8.2.0",
     "dotenv": "^17.2.0",
     "nats": "^2.29.3",
     "pino": "^9.7.0",
