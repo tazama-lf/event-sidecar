@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1
 # SPDX-License-Identifier: Apache-2.0
-ARG BUILD_IMAGE=node:20-bullseye
-#ARG RUN_IMAGE=node:21-alpine
+ARG BUILD_IMAGE=node:24-bookworm
+#ARG RUN_IMAGE=node:24-alpine
 # NOTE: using distroless runtime image as alpine gives access to shell
 # Alpine image may be useful in dev
-ARG RUN_IMAGE=gcr.io/distroless/nodejs20-debian11:nonroot
+ARG RUN_IMAGE=gcr.io/distroless/nodejs24-debian13:nonroot
 
 FROM ${BUILD_IMAGE} AS builder
 LABEL stage=build
